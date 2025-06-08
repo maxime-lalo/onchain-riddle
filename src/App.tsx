@@ -1,17 +1,14 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import RiddleDisplay from "@/components/materials/RiddleDisplay";
-import SetRiddleForm from "./components/materials/SetRiddleForm";
-import IsBot from "@/components/wrappers/IsBot";
+import styles from "./App.module.scss";
+import Header from "@/components/elements/Header";
+import { Outlet } from "react-router-dom";
 
 function App() {
     return (
-        <div className="app">
-            <h1>Onchain Riddle</h1>
-            <ConnectButton />
-            <RiddleDisplay />
-            <IsBot>
-                <SetRiddleForm />
-            </IsBot>
+        <div className={styles.container}>
+            <Header />
+            <main>
+                <Outlet />
+            </main>
         </div>
     );
 }
