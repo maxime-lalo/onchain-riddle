@@ -1,5 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import RiddleDisplay from "@/components/materials/RiddleDisplay";
+import SetRiddleForm from "./components/materials/SetRiddleForm";
+import IsBot from "@/components/wrappers/IsBot";
 
 function App() {
     return (
@@ -7,6 +9,9 @@ function App() {
             <h1>Onchain Riddle</h1>
             <ConnectButton />
             <RiddleDisplay />
+            <IsBot>
+                <SetRiddleForm />
+            </IsBot>
         </div>
     );
 }
