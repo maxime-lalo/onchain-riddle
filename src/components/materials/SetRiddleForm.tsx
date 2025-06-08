@@ -39,7 +39,7 @@ export default function SetRiddleForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h2>Create New Riddle</h2>
+            <h2>Set the riddle</h2>
             <input
                 type="text"
                 value={riddleText}

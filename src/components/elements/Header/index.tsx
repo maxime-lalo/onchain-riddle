@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styles from "./classes.module.scss";
+import IsBot from "@/components/wrappers/IsBot";
 
 export default function Header() {
     return (
@@ -11,20 +12,22 @@ export default function Header() {
                     to="/"
                     className={({ isActive }) => (isActive ? "active" : "")}
                 >
-                    Accueil
+                    Home
                 </NavLink>
                 <NavLink
                     to="/riddle"
                     className={({ isActive }) => (isActive ? "active" : "")}
                 >
-                    Jouer
+                    Play
                 </NavLink>
-                <NavLink
-                    to="/admin"
-                    className={({ isActive }) => (isActive ? "active" : "")}
-                >
-                    Admin
-                </NavLink>
+                <IsBot>
+                    <NavLink
+                        to="/admin"
+                        className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                        Admin
+                    </NavLink>
+                </IsBot>
             </nav>
             <ConnectButton />
         </header>

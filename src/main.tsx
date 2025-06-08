@@ -7,7 +7,7 @@ import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, http } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Router from "./router";
+import Router from "@/router";
 
 const config = getDefaultConfig({
     appName: "Onchain Riddle",
