@@ -18,6 +18,18 @@
         "docker:dev": "docker compose up --build",
         "docker:logs": "docker compose logs -f",
         "docker:down": "docker compose down",
+        "docker:tag": "docker tag onchain-riddle-onchain-riddle myzall/onchain-riddle:latest",
+        "docker:tag:version": "docker tag onchain-riddle-onchain-riddle myzall/onchain-riddle:v$npm_package_version",
+        "docker:push": "docker push myzall/onchain-riddle:latest",
+        "docker:push:version": "docker push myzall/onchain-riddle:v$npm_package_version",
+        "docker:deploy": "pnpm run docker:tag && pnpm run docker:push",
+        "docker:deploy:version": "pnpm run docker:tag:version && pnpm run docker:push:version",
+        "docker:deploy:all": "pnpm run docker:tag && pnpm run docker:tag:version && pnpm run docker:push && pnpm run docker:push:version",
+        "release": "pnpm run docker:build && pnpm run docker:deploy:all",
+        "prod:up": "docker compose -f docker-compose.prod.yml --env-file .env.prod up -d",
+        "prod:down": "docker compose -f docker-compose.prod.yml down",
+        "prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
+        "prod:deploy": "pnpm run release && pnpm run prod:up",
         "deploy": "./deploy.sh"
     },
     "devDependencies": {
