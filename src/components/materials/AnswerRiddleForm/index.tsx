@@ -13,14 +13,6 @@ type AnswerAttemptArgs = {
     correct: boolean;
 };
 
-type WinnerArgs = {
-    user: `0x${string}`;
-};
-
-type RiddleSetArgs = {
-    riddle: string;
-};
-
 export default function AnswerRiddleForm() {
     const [answerText, setAnswerText] = useState("");
     const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
@@ -46,7 +38,7 @@ export default function AnswerRiddleForm() {
     });
 
     useWatchOnchainRiddleEvent({
-        enabled: Boolean(txHash), // Seulement quand une transaction est en cours
+        enabled: Boolean(txHash), // Only when a transaction is in progress
         onLogs(logs) {
             const newLogs = logs.filter(
                 (log) =>
@@ -63,13 +55,13 @@ export default function AnswerRiddleForm() {
 
                 P.match(latestLog)
                     .with({ eventName: "AnswerAttempt" }, (log) => {
-                        const { user, correct } = log.args as AnswerAttemptArgs;
+                        const { correct } = log.args as AnswerAttemptArgs;
 
                         if (correct) {
-                            // Réponse correcte - attendre pour voir si on gagne
+                            // Correct answer - wait to see if we win
                             Swal.fire({
-                                title: "Bonne réponse ! 🎉",
-                                text: "Vérification si vous êtes le premier...",
+                                title: "Correct answer! 🎉",
+                                text: "Checking if you are the first...",
                                 icon: "success",
                                 showConfirmButton: false,
                                 allowOutsideClick: false,
@@ -79,11 +71,11 @@ export default function AnswerRiddleForm() {
                                 },
                             });
 
-                            // Timeout de sécurité au cas où l'événement Winner ne se déclenche pas
+                            // Safety timeout in case the Winner event doesn't trigger
                             setTimeout(() => {
                                 Swal.fire({
-                                    title: "Bonne réponse ! ✅",
-                                    text: "Quelqu'un d'autre a peut-être gagné avant vous.",
+                                    title: "Correct answer! ✅",
+                                    text: "Someone else may have won before you.",
                                     icon: "info",
                                     confirmButtonText: "OK",
                                     confirmButtonColor: "#3085d6",
@@ -93,45 +85,37 @@ export default function AnswerRiddleForm() {
                                 });
                             }, 5000);
                         } else {
-                            // Réponse incorrecte
+                            // Incorrect answer
                             setAnswerText("");
                             setIsProcessing(false);
 
                             Swal.fire({
-                                title: "Réponse incorrecte ❌",
-                                text: "Essayez encore !",
+                                title: "Incorrect answer ❌",
+                                text: "Try again!",
                                 icon: "error",
-                                confirmButtonText: "Réessayer",
+                                confirmButtonText: "Retry",
                                 confirmButtonColor: "#3085d6",
                                 allowOutsideClick: true,
                                 allowEscapeKey: true,
-                                didOpen: () => {
-                                    console.log(
-                                        "Opened incorrect answer alert"
-                                    );
-                                },
                             });
                         }
-                        console.log("🔁 AnswerAttempt", user, correct);
                     })
-                    .with({ eventName: "Winner" }, (log) => {
-                        const { user } = log.args as WinnerArgs;
-
+                    .with({ eventName: "Winner" }, () => {
                         Swal.fire({
-                            title: "🏆 FÉLICITATIONS ! 🏆",
+                            title: "🏆 CONGRATULATIONS! 🏆",
                             html: `
                                 <div style="text-align: center;">
                                     <div style="font-size: 4rem; margin: 20px 0;">🎊</div>
                                     <p style="font-size: 1.2rem; margin-bottom: 10px;">
-                                        Vous avez remporté la riddle !
+                                        You won the riddle!
                                     </p>
                                     <p style="color: #666;">
-                                        Vous êtes le premier à avoir trouvé la bonne réponse !
+                                        You are the first to find the correct answer!
                                     </p>
                                 </div>
                             `,
                             icon: "success",
-                            confirmButtonText: "Fantastique !",
+                            confirmButtonText: "Fantastic!",
                             confirmButtonColor: "#28a745",
                             allowOutsideClick: false,
                             allowEscapeKey: false,
@@ -142,22 +126,18 @@ export default function AnswerRiddleForm() {
                                 popup: "animate__animated animate__fadeOut",
                             },
                         });
-                        console.log("🏆 Winner:", user);
                     })
-                    .with({ eventName: "RiddleSet" }, (log) => {
-                        const { riddle } = log.args as RiddleSetArgs;
-                        console.log("🧩 Riddle:", riddle);
-                    })
+                    .with({ eventName: "RiddleSet" }, () => null)
                     .exhaustive();
             }
         },
     });
 
-    // Gestion des erreurs avec SweetAlert
+    // Error handling with SweetAlert
     useEffect(() => {
         if (writeError) {
             Swal.fire({
-                title: "Erreur de transaction",
+                title: "Transaction error",
                 text: writeError.message,
                 icon: "error",
                 confirmButtonText: "OK",
@@ -167,28 +147,27 @@ export default function AnswerRiddleForm() {
         }
     }, [writeError]);
 
-    // Toast de progression pour la confirmation
+    // Progress toast for confirmation
     useEffect(() => {
-        if (isConfirming) {
-            Swal.fire({
-                title: "Transaction en cours...",
-                text: "Attente de confirmation sur la blockchain",
-                icon: "info",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-            });
-        }
+        if (!isConfirming) return;
+        Swal.fire({
+            title: "Transaction in progress...",
+            text: "Waiting for blockchain confirmation",
+            icon: "info",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
     }, [isConfirming]);
 
     useEffect(() => {
         if (!simulation) return;
         if (simulateError) {
             Swal.fire({
-                title: "Erreur de simulation",
+                title: "Simulation error",
                 text: simulateError.message,
                 icon: "error",
                 confirmButtonText: "OK",
@@ -197,8 +176,8 @@ export default function AnswerRiddleForm() {
         }
 
         Swal.fire({
-            title: "Envoi de votre réponse...",
-            text: "Signature de la transaction en cours",
+            title: "Sending your answer...",
+            text: "Transaction signature in progress",
             icon: "info",
             timer: 3000,
             timerProgressBar: true,
@@ -210,7 +189,7 @@ export default function AnswerRiddleForm() {
         writeContract(simulation.request, {
             onSuccess: (data) => {
                 setTxHash(data);
-                // Nettoyer les transactions précédentes
+                // Clear previous transactions
                 processedTxHashes.current.clear();
             },
             onError: () => {
@@ -235,53 +214,38 @@ export default function AnswerRiddleForm() {
 
         setIsProcessing(true);
 
-        // Calculer le hash de la réponse
+        // Calculate the answer hash
         const hash = keccak256(toUtf8Bytes(answerText.trim())) as `0x${string}`;
         setAnswerHash(hash);
 
-        // La simulation se déclenchera automatiquement via le useEffect
-        // grâce à la condition enabled: Boolean(answerHash && isProcessing)
+        // The simulation will trigger automatically via useEffect
+        // thanks to the condition enabled: Boolean(answerHash && isProcessing)
     };
 
     return (
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                    Quelle est votre réponse ?
-                </h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <h3>What is your answer?</h3>
 
-                <input
-                    type="text"
-                    value={answerText}
-                    onChange={onAnswerChange}
-                    placeholder="Votre réponse..."
-                    required
-                    disabled={isProcessing}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
+            <input
+                type="text"
+                value={answerText}
+                onChange={onAnswerChange}
+                placeholder="Your answer..."
+                required
+                disabled={isProcessing}
+            />
 
-                <button
-                    type="submit"
-                    disabled={
-                        !answerText.trim() ||
-                        isPending ||
-                        isConfirming ||
-                        isProcessing
-                    }
-                    className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                >
-                    {isProcessing ? "Traitement en cours..." : "Répondre"}
-                </button>
-            </form>
-
-            {/* Hash de transaction pour debug (optionnel) */}
-            {txHash && (
-                <div className="mt-4">
-                    <p className="text-xs text-gray-500 break-all">
-                        TX: {txHash}
-                    </p>
-                </div>
-            )}
-        </div>
+            <button
+                type="submit"
+                disabled={
+                    !answerText.trim() ||
+                    isPending ||
+                    isConfirming ||
+                    isProcessing
+                }
+            >
+                {isProcessing ? "Processing..." : "Submit"}
+            </button>
+        </form>
     );
 }
