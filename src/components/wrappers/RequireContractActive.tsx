@@ -11,9 +11,7 @@ export default function RequireContractActive({
     const [shouldRedirect, setShouldRedirect] = useState(false);
     const { data: isActive } = useReadOnchainRiddleIsActive();
 
-    console.log("isActive", isActive);
     useEffect(() => {
-        console.log("Contract active  ", isActive);
         if (!isActive) {
             const timer = setTimeout(() => {
                 setShouldRedirect(true);

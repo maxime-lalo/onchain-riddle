@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { keccak256, toUtf8Bytes } from "ethers";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
     useSimulateOnchainRiddleSubmitAnswer,
     useWatchOnchainRiddleEvent,
 } from "@/hooks/WagmiGenerated";
-import * as P from "ts-pattern";
 
 type AnswerAttemptArgs = {
     user: `0x${string}`;
@@ -14,20 +13,19 @@ type AnswerAttemptArgs = {
 };
 
 export default function AnswerRiddleForm() {
-    const [answerText, setAnswerText] = useState("");
+    const navigate = useNavigate();
+    const [answer, setAnswer] = useState("");
     const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
 
     const [isProcessing, setIsProcessing] = useState(false);
-
-    const [answerHash, setAnswerHash] = useState<`0x${string}` | null>(null);
 
     const processedTxHashes = useRef<Set<string>>(new Set());
 
     const { data: simulation, error: simulateError } =
         useSimulateOnchainRiddleSubmitAnswer({
-            args: [answerHash! as `0x${string}`],
+            args: [answer],
             query: {
-                enabled: Boolean(answerHash && isProcessing),
+                enabled: isProcessing,
             },
         });
 
@@ -48,87 +46,80 @@ export default function AnswerRiddleForm() {
 
             if (newLogs.length === 0) return;
 
-            const latestLog = newLogs[newLogs.length - 1];
+            // Mark all new logs as processed
+            newLogs.forEach((log) => {
+                processedTxHashes.current.add(log.transactionHash);
+            });
 
-            if (latestLog) {
-                processedTxHashes.current.add(latestLog.transactionHash);
+            // Check if we have a Winner event in the logs
+            const winnerLog = newLogs.find((log) => log.eventName === "Winner");
+            const answerAttemptLog = newLogs.find(
+                (log) => log.eventName === "AnswerAttempt"
+            );
 
-                P.match(latestLog)
-                    .with({ eventName: "AnswerAttempt" }, (log) => {
-                        const { correct } = log.args as AnswerAttemptArgs;
+            if (winnerLog) {
+                // If there's a Winner event, show the congratulations message
+                Swal.fire({
+                    title: "🏆 CONGRATULATIONS! 🏆",
+                    html: `
+                        <div style="text-align: center;">
+                            <div style="font-size: 4rem; margin: 20px 0;">🎊</div>
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">
+                                You won the riddle!
+                            </p>
+                            <p style="color: #666;">
+                                You are the first to find the correct answer!
+                            </p>
+                        </div>
+                    `,
+                    icon: "success",
+                    confirmButtonText: "Fantastic!",
+                    confirmButtonColor: "#28a745",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showClass: {
+                        popup: "animate__animated animate__jackInTheBox",
+                    },
+                    hideClass: {
+                        popup: "animate__animated animate__fadeOut",
+                    },
+                }).then(() => {
+                    setAnswer("");
+                    setIsProcessing(false);
+                    navigate("/");
+                });
+                return;
+            } else if (answerAttemptLog) {
+                // If there's only an AnswerAttempt event (no Winner), process it
+                const { correct } = answerAttemptLog.args as AnswerAttemptArgs;
 
-                        if (correct) {
-                            // Correct answer - wait to see if we win
-                            Swal.fire({
-                                title: "Correct answer! 🎉",
-                                text: "Checking if you are the first...",
-                                icon: "success",
-                                showConfirmButton: false,
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                },
-                            });
+                if (correct) {
+                    Swal.fire({
+                        title: "Correct answer! 🎉 But...",
+                        text: "Someone won before you.",
+                        icon: "warning",
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                    }).then(() => {
+                        setAnswer("");
+                        setIsProcessing(false);
+                        navigate("/");
+                    });
+                } else {
+                    setAnswer("");
+                    setIsProcessing(false);
 
-                            // Safety timeout in case the Winner event doesn't trigger
-                            setTimeout(() => {
-                                Swal.fire({
-                                    title: "Correct answer! ✅",
-                                    text: "Someone else may have won before you.",
-                                    icon: "info",
-                                    confirmButtonText: "OK",
-                                    confirmButtonColor: "#3085d6",
-                                }).then(() => {
-                                    setAnswerText("");
-                                    setIsProcessing(false);
-                                });
-                            }, 5000);
-                        } else {
-                            // Incorrect answer
-                            setAnswerText("");
-                            setIsProcessing(false);
-
-                            Swal.fire({
-                                title: "Incorrect answer ❌",
-                                text: "Try again!",
-                                icon: "error",
-                                confirmButtonText: "Retry",
-                                confirmButtonColor: "#3085d6",
-                                allowOutsideClick: true,
-                                allowEscapeKey: true,
-                            });
-                        }
-                    })
-                    .with({ eventName: "Winner" }, () => {
-                        Swal.fire({
-                            title: "🏆 CONGRATULATIONS! 🏆",
-                            html: `
-                                <div style="text-align: center;">
-                                    <div style="font-size: 4rem; margin: 20px 0;">🎊</div>
-                                    <p style="font-size: 1.2rem; margin-bottom: 10px;">
-                                        You won the riddle!
-                                    </p>
-                                    <p style="color: #666;">
-                                        You are the first to find the correct answer!
-                                    </p>
-                                </div>
-                            `,
-                            icon: "success",
-                            confirmButtonText: "Fantastic!",
-                            confirmButtonColor: "#28a745",
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            showClass: {
-                                popup: "animate__animated animate__jackInTheBox",
-                            },
-                            hideClass: {
-                                popup: "animate__animated animate__fadeOut",
-                            },
-                        });
-                    })
-                    .with({ eventName: "RiddleSet" }, () => null)
-                    .exhaustive();
+                    Swal.fire({
+                        title: "Incorrect answer ❌",
+                        text: "Try again!",
+                        icon: "error",
+                        confirmButtonText: "Retry",
+                        confirmButtonColor: "#3085d6",
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
+                    });
+                }
             }
         },
     });
@@ -194,30 +185,23 @@ export default function AnswerRiddleForm() {
             },
             onError: () => {
                 setIsProcessing(false);
-                setAnswerHash(null);
             },
         });
         setIsProcessing(false);
-        setAnswerHash(null);
     }, [simulation, simulateError, writeContract]);
 
     const onAnswerChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            setAnswerText(e.target.value);
+            setAnswer(e.target.value);
         },
         []
     );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!answerText.trim() || isProcessing) return;
+        if (!answer.trim() || isProcessing) return;
 
         setIsProcessing(true);
-
-        // Calculate the answer hash
-        const hash = keccak256(toUtf8Bytes(answerText.trim())) as `0x${string}`;
-        setAnswerHash(hash);
-
         // The simulation will trigger automatically via useEffect
         // thanks to the condition enabled: Boolean(answerHash && isProcessing)
     };
@@ -228,7 +212,7 @@ export default function AnswerRiddleForm() {
 
             <input
                 type="text"
-                value={answerText}
+                value={answer}
                 onChange={onAnswerChange}
                 placeholder="Your answer..."
                 required
@@ -238,10 +222,7 @@ export default function AnswerRiddleForm() {
             <button
                 type="submit"
                 disabled={
-                    !answerText.trim() ||
-                    isPending ||
-                    isConfirming ||
-                    isProcessing
+                    !answer.trim() || isPending || isConfirming || isProcessing
                 }
             >
                 {isProcessing ? "Processing..." : "Submit"}
