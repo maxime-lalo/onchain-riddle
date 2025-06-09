@@ -12,10 +12,10 @@ export default function Home() {
                 </p>
             </IsContractActive>
             <IsContractActive not>
-                <p>
-                    ⛔ The contract is not active. Please wait for the owner to
-                    activate it.
-                </p>
+                <div className="loading-container">
+                    <div className="spinner"></div>
+                    <p>📝 The next riddle is coming, please wait...</p>
+                </div>
             </IsContractActive>
             <LastWinnerDisplay />
         </div>

@@ -1,4 +1,4 @@
-import { useReadOnchainRiddleIsActive } from "@/hooks/WagmiGenerated";
+import { useContractStore } from "@/hooks/useContractStore";
 import type { ReactNode } from "react";
 
 interface IProps {
@@ -7,10 +7,10 @@ interface IProps {
 }
 
 export default function IsContractActive({ children, not = false }: IProps) {
-    const { data: isActive } = useReadOnchainRiddleIsActive();
+    const { state } = useContractStore();
 
-    if (not && isActive) return null;
-    if (!not && !isActive) return null;
+    if (not && state.isActive) return null;
+    if (!not && !state.isActive) return null;
 
     return <>{children}</>;
 }
