@@ -1,5 +1,5 @@
 import { createPublicClient, createWalletClient, http, keccak256, toBytes, type PublicClient, type WalletClient, type Address, type Hash, type Log } from "viem";
-import { mainnet } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
@@ -24,6 +24,7 @@ const PRIVATE_KEY: Hash = process.env.PRIVATE_KEY as Hash;
 
 console.log(`📋 Contract Address loaded: ${CONTRACT_ADDRESS}`);
 console.log(`🌐 RPC URL configured: ${RPC_URL}`);
+console.log(`🔗 Network: Sepolia testnet`);
 
 // Load contract ABI
 const abiPath = join(__dirname, "../../../shared/contracts/OnchainRiddle.json");
@@ -31,14 +32,14 @@ const OnchainRiddle: ContractABI = JSON.parse(readFileSync(abiPath, "utf8"));
 
 // Setup clients
 const client: PublicClient = createPublicClient({
-    chain: mainnet,
+    chain: sepolia,
     transport: http(RPC_URL),
 });
 
 const account = privateKeyToAccount(PRIVATE_KEY);
 const walletClient: WalletClient = createWalletClient({
     account,
-    chain: mainnet,
+    chain: sepolia,
     transport: http(RPC_URL),
 });
 
@@ -183,7 +184,7 @@ class BackgroundService implements IBackgroundService {
                 functionName: "setRiddle",
                 args: [riddle.question, answerHash],
                 account: account,
-                chain: mainnet,
+                chain: sepolia,
             });
 
             console.log(`✨ New riddle set! Transaction hash: ${hash}`);

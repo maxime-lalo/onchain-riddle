@@ -6,6 +6,7 @@ import {
     useSimulateOnchainRiddleSubmitAnswer,
     useWatchOnchainRiddleEvent,
 } from "@/hooks/WagmiGenerated";
+import { CONTRACT_ADDRESS } from "@/config/contracts";
 
 type AnswerAttemptArgs = {
     user: `0x${string}`;
@@ -24,6 +25,7 @@ export default function AnswerRiddleForm() {
         error: simulateError,
         refetch: fetchSimulation,
     } = useSimulateOnchainRiddleSubmitAnswer({
+        address: CONTRACT_ADDRESS,
         args: [answer],
         query: {
             enabled: false,
@@ -37,6 +39,7 @@ export default function AnswerRiddleForm() {
     });
 
     useWatchOnchainRiddleEvent({
+        address: CONTRACT_ADDRESS,
         enabled: Boolean(txHash), // Only when a transaction is in progress
         onLogs(logs) {
             setAnswer("");

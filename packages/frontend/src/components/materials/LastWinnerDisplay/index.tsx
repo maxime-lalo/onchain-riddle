@@ -1,11 +1,14 @@
 import { useReadOnchainRiddleWinner } from "@/hooks/WagmiGenerated";
+import { CONTRACT_ADDRESS } from "@/config/contracts";
 
 export default function LastWinnerDisplay() {
     const {
         data: winner,
         isLoading: isWinnerLoading,
         error: winnerError,
-    } = useReadOnchainRiddleWinner();
+    } = useReadOnchainRiddleWinner({
+        address: CONTRACT_ADDRESS,
+    });
 
     if (isWinnerLoading) return <p>Loading last winner...</p>;
     if (winnerError)

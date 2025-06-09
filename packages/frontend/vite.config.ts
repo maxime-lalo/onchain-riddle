@@ -10,4 +10,5 @@ export default defineConfig({
             "@": path.resolve(__dirname, "src"),
         },
     },
+    envDir: path.resolve(__dirname, "../../"), // Point to root directory for .env files
 });

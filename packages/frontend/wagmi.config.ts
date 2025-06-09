@@ -3,15 +3,13 @@ import { react } from "@wagmi/cli/plugins";
 import OnchainRiddle from "../../shared/contracts/OnchainRiddle.json";
 import type { Abi } from "viem";
 
-// Use environment variable if available, fallback to JSON address
-
 export default defineConfig({
     out: "src/hooks/WagmiGenerated.ts",
     contracts: [
         {
             name: "OnchainRiddle",
             abi: OnchainRiddle.abi as Abi,
-            address: process.env.VITE_CONTRACT_ADDRESS as `0x${string}`,
+            // Ne pas spécifier d'adresse ici pour qu'elle soit lue dynamiquement
         },
     ],
     plugins: [react()],

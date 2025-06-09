@@ -2,6 +2,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useAccount } from "wagmi";
 import { Navigate } from "react-router-dom";
 import { useReadOnchainRiddleBot } from "@/hooks/WagmiGenerated";
+import { CONTRACT_ADDRESS } from "@/config/contracts";
+
 interface RequireWalletProps {
     children: ReactNode;
 }
@@ -9,7 +11,9 @@ interface RequireWalletProps {
 export default function RequireWallet({ children }: RequireWalletProps) {
     const { address, isConnected, isConnecting } = useAccount();
     const [shouldRedirect, setShouldRedirect] = useState(false);
-    const { data: botAddress } = useReadOnchainRiddleBot();
+    const { data: botAddress } = useReadOnchainRiddleBot({
+        address: CONTRACT_ADDRESS,
+    });
 
     useEffect(() => {
         if (!isConnecting && !isConnected) {

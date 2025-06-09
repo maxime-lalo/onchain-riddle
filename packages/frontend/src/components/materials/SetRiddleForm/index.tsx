@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { keccak256, toUtf8Bytes } from "ethers";
 import Swal from "sweetalert2";
 import { useSimulateOnchainRiddleSetRiddle } from "@/hooks/WagmiGenerated";
+import { CONTRACT_ADDRESS } from "@/config/contracts";
 
 export default function SetRiddleForm() {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function SetRiddleForm() {
 
     const { data: simulation, error: simulateError } =
         useSimulateOnchainRiddleSetRiddle({
+            address: CONTRACT_ADDRESS,
             args: [riddleText, answerHash! as `0x${string}`],
             query: {
                 enabled: Boolean(riddleText && answerHash && isProcessing),
