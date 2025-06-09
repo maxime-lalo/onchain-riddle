@@ -1,6 +1,6 @@
 import RiddleDisplay from "@/components/materials/RiddleDisplay";
 import IsConnected from "@/components/wrappers/IsConnected";
-//import AnswerForm from "@/components/materials/AnswerForm";
+import AnswerRiddleForm from "@/components/materials/AnswerRiddleForm";
 
 export default function RiddlePlay() {
     return (
@@ -10,7 +10,7 @@ export default function RiddlePlay() {
                 <p>Please connect your wallet to play the riddle.</p>
             </IsConnected>
             <IsConnected>
-                <p>Answer </p>
+                <AnswerRiddleForm />
             </IsConnected>
         </>
     );
