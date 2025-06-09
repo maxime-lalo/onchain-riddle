@@ -17,17 +17,18 @@ export default function AnswerRiddleForm() {
     const [answer, setAnswer] = useState("");
     const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
 
-    const [isProcessing, setIsProcessing] = useState(false);
-
     const processedTxHashes = useRef<Set<string>>(new Set());
 
-    const { data: simulation, error: simulateError } =
-        useSimulateOnchainRiddleSubmitAnswer({
-            args: [answer],
-            query: {
-                enabled: isProcessing,
-            },
-        });
+    const {
+        data: simulation,
+        error: simulateError,
+        refetch: fetchSimulation,
+    } = useSimulateOnchainRiddleSubmitAnswer({
+        args: [answer],
+        query: {
+            enabled: false,
+        },
+    });
 
     const { writeContract, isPending, error: writeError } = useWriteContract();
 
@@ -38,6 +39,7 @@ export default function AnswerRiddleForm() {
     useWatchOnchainRiddleEvent({
         enabled: Boolean(txHash), // Only when a transaction is in progress
         onLogs(logs) {
+            setAnswer("");
             const newLogs = logs.filter(
                 (log) =>
                     log.transactionHash === txHash &&
@@ -84,8 +86,6 @@ export default function AnswerRiddleForm() {
                         popup: "animate__animated animate__fadeOut",
                     },
                 }).then(() => {
-                    setAnswer("");
-                    setIsProcessing(false);
                     navigate("/");
                 });
                 return;
@@ -102,14 +102,9 @@ export default function AnswerRiddleForm() {
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                     }).then(() => {
-                        setAnswer("");
-                        setIsProcessing(false);
                         navigate("/");
                     });
                 } else {
-                    setAnswer("");
-                    setIsProcessing(false);
-
                     Swal.fire({
                         title: "Incorrect answer ❌",
                         text: "Try again!",
@@ -134,7 +129,6 @@ export default function AnswerRiddleForm() {
                 confirmButtonText: "OK",
                 confirmButtonColor: "#d33",
             });
-            setIsProcessing(false);
         }
     }, [writeError]);
 
@@ -184,10 +178,9 @@ export default function AnswerRiddleForm() {
                 processedTxHashes.current.clear();
             },
             onError: () => {
-                setIsProcessing(false);
+                setAnswer("");
             },
         });
-        setIsProcessing(false);
     }, [simulation, simulateError, writeContract]);
 
     const onAnswerChange = useCallback(
@@ -197,14 +190,16 @@ export default function AnswerRiddleForm() {
         []
     );
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!answer.trim() || isProcessing) return;
-
-        setIsProcessing(true);
-        // The simulation will trigger automatically via useEffect
-        // thanks to the condition enabled: Boolean(answerHash && isProcessing)
-    };
+    const handleSubmit = useCallback(
+        (e: React.FormEvent) => {
+            e.preventDefault();
+            if (answer.length === 0) return;
+            fetchSimulation();
+            // The simulation will trigger automatically via useEffect
+            // thanks to the condition enabled: Boolean(answerHash && isProcessing)
+        },
+        [answer, fetchSimulation]
+    );
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -216,16 +211,13 @@ export default function AnswerRiddleForm() {
                 onChange={onAnswerChange}
                 placeholder="Your answer..."
                 required
-                disabled={isProcessing}
             />
 
             <button
                 type="submit"
-                disabled={
-                    !answer.trim() || isPending || isConfirming || isProcessing
-                }
+                disabled={!answer.trim() || isPending || isConfirming}
             >
-                {isProcessing ? "Processing..." : "Submit"}
+                Submit
             </button>
         </form>
     );
