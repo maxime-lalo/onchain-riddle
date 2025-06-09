@@ -1,54 +1,83 @@
-# React + TypeScript + Vite
+# Onchain Riddle - Complete Documentation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📋 Table of Contents
 
-Currently, two official plugins are available:
+1. [Overview](#overview)
+2. [Technical Architecture](#technical-architecture)
+3. [Installation and Setup](#installation-and-setup)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎯 Overview
 
-## Expanding the ESLint configuration
+**Onchain Riddle** is a decentralized application (dApp) that allows users to participate in blockchain-based riddle games on the Ethereum network. The first player to solve the riddle wins the round.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Key Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+-   **For Players**:
+
+    -   Wallet connection via RainbowKit
+    -   View active riddles
+    -   Submit answers with real-time feedback
+    -   Instant win/loss notifications
+
+-   **For Administrator (Bot wallet)**:
+    -   Create new riddles
+
+## 🏗️ Technical Architecture
+
+### Technology Stack
+
+#### Frontend
+
+-   **Framework**: React 19 + TypeScript + Vite 6
+-   **Styling**: SCSS/Sass modules
+-   **Routing**: React Router DOM v7
+-   **UI/UX**: SweetAlert2 for notifications
+
+#### Blockchain
+
+-   **Integration**: wagmi v2 + viem + RainbowKit
+-   **Cryptography**: Ethers.js v6
+-   **Network**: Ethereum Sepolia testnet
+-   **RPC**: Infura endpoint
+
+#### Development Tools
+
+-   **Build**: Vite, TypeScript ~5.8
+-   **Quality**: ESLint v9
+-   **Pattern Matching**: ts-pattern
+
+## 🚀 Installation and Setup
+
+### Prerequisites
+
+-   Node.js ≥ 18
+-   pnpm (package manager)
+-   Compatible wallet (MetaMask, WalletConnect, etc.)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd onchain-riddle
+
+# Install dependencies
+pnpm install
+
+# Copy environment variables
+cp .env.example .env
+
+# Edit .env with your values
+# Then start development server
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file based on `.env.exemple`:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```env
+# Blockchain Configuration
+VITE_CONTRACT_ADDRESS=0x9D26cbcd2B10B5A4Dbe855c611a9d66D82c57663
+VITE_RPC_URL=https://sepolia.infura.io/v3
 ```
