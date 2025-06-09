@@ -103,8 +103,7 @@ export const onchainRiddleAbi = [
     },
 ] as const;
 
-export const onchainRiddleAddress =
-    "0x9D26cbcd2B10B5A4Dbe855c611a9d66D82c57663" as const;
+export const onchainRiddleAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
 
 export const onchainRiddleConfig = {
     address: onchainRiddleAddress,

@@ -1,7 +1,6 @@
 {
     "_format": "hh-sol-artifact-1",
     "contractName": "OnchainRiddle",
-    "address": "0xa2EaC3FB4422F34a2FdE73D6c801E1EDA38B267E",
     "sourceName": "contracts/OnchainRiddle.sol",
     "abi": [
         {

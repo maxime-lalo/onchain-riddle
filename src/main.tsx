@@ -11,12 +11,10 @@ import Router from "@/router";
 
 const config = getDefaultConfig({
     appName: "Onchain Riddle",
-    projectId: "demo", // utilise un vrai ID si nécessaire
+    projectId: "demo",
     chains: [sepolia],
     transports: {
-        [sepolia.id]: http(
-            "https://sepolia.infura.io/v3/449cf3a9421a45bcb5100545b50360cb"
-        ),
+        [sepolia.id]: http(import.meta.env.VITE_RPC_URL),
     },
 });
 
