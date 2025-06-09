@@ -14,7 +14,9 @@ const config = getDefaultConfig({
     projectId: "demo", // utilise un vrai ID si nécessaire
     chains: [sepolia],
     transports: {
-        [sepolia.id]: http(),
+        [sepolia.id]: http(
+            "https://sepolia.infura.io/v3/449cf3a9421a45bcb5100545b50360cb"
+        ),
     },
 });
 

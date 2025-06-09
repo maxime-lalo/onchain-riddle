@@ -29,6 +29,12 @@ importers:
       react-router-dom:
         specifier: ^7.6.2
         version: 7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      sweetalert2:
+        specifier: ^11.22.0
+        version: 11.22.0
+      ts-pattern:
+        specifier: ^5.7.1
+        version: 5.7.1
       viem:
         specifier: ^2.31.0
         version: 2.31.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4)
@@ -2281,6 +2287,9 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
+  sweetalert2@11.22.0:
+    resolution: {integrity: sha512-pSMuRGDULhh+wrFkO22O0YsIXxs8yFE0O+WVYXcqc/sTa1oRnf0JlR+vfQIRY1QM1UeFfnCjyw6DYnG75/oxiQ==}
+
   thread-stream@0.15.2:
     resolution: {integrity: sha512-UkEhKIg2pD+fjkHQKyJO3yoIvAP3N6RlNFt2dUhcS1FGvCD1cQa1M/PGknCLFIyZdtJOWQjejp7bdNqmN7zwdA==}
 
@@ -2300,6 +2309,9 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
+
+  ts-pattern@5.7.1:
+    resolution: {integrity: sha512-EGs8PguQqAAUIcQfK4E9xdXxB6s2GK4sJfT/vcc9V1ELIvC4LH/zXu2t/5fajtv6oiRCxdv7BgtVK3vWgROxag==}
 
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
@@ -5626,6 +5638,8 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
+  sweetalert2@11.22.0: {}
+
   thread-stream@0.15.2:
     dependencies:
       real-require: 0.1.0
@@ -5644,6 +5658,8 @@ snapshots:
   ts-api-utils@2.1.0(typescript@5.8.3):
     dependencies:
       typescript: 5.8.3
+
+  ts-pattern@5.7.1: {}
 
   tslib@1.14.1: {}
 
