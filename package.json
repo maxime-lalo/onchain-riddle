@@ -15,7 +15,10 @@
         "dev:frontend": "pnpm --filter frontend dev",
         "docker:build": "docker compose build",
         "docker:up": "docker compose up",
-        "docker:dev": "docker compose up --build"
+        "docker:dev": "docker compose up --build",
+        "docker:logs": "docker compose logs -f",
+        "docker:down": "docker compose down",
+        "deploy": "./deploy.sh"
     },
     "devDependencies": {
         "typescript": "~5.8.3"
