@@ -1,35 +1,42 @@
 {
-  "name": "onchain-riddle",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.2.6",
-    "@tanstack/react-query": "^5.80.6",
-    "ethers": "^6.14.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "viem": "^2.31.0",
-    "wagmi": "^2.15.6"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.25.0",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.1",
-    "eslint": "^9.25.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "sass": "^1.89.1",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
-  }
+    "name": "onchain-riddle",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "pnpm run --parallel dev",
+        "build": "pnpm run --recursive build",
+        "start:backend": "pnpm --filter backend start",
+        "start:frontend": "pnpm --filter frontend dev",
+        "dev:backend": "pnpm --filter backend dev",
+        "dev:frontend": "pnpm --filter frontend dev",
+        "docker:build": "docker compose build",
+        "docker:up": "docker compose up",
+        "docker:dev": "docker compose up --build",
+        "docker:logs": "docker compose logs -f",
+        "docker:down": "docker compose down",
+        "docker:tag": "docker tag onchain-riddle-onchain-riddle myzall/onchain-riddle:latest",
+        "docker:tag:version": "docker tag onchain-riddle-onchain-riddle myzall/onchain-riddle:v$npm_package_version",
+        "docker:push": "docker push myzall/onchain-riddle:latest",
+        "docker:push:version": "docker push myzall/onchain-riddle:v$npm_package_version",
+        "docker:deploy": "pnpm run docker:tag && pnpm run docker:push",
+        "docker:deploy:version": "pnpm run docker:tag:version && pnpm run docker:push:version",
+        "docker:deploy:all": "pnpm run docker:tag && pnpm run docker:tag:version && pnpm run docker:push && pnpm run docker:push:version",
+        "release": "pnpm run docker:build && pnpm run docker:deploy:all",
+        "prod:up": "docker compose -f docker-compose.prod.yml --env-file .env.prod up -d",
+        "prod:down": "docker compose -f docker-compose.prod.yml down",
+        "prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
+        "prod:deploy": "pnpm run release && pnpm run prod:up",
+        "deploy": "./deploy.sh"
+    },
+    "devDependencies": {
+        "typescript": "~5.8.3"
+    },
+    "engines": {
+        "node": ">=20.0.0",
+        "pnpm": ">=8.0.0"
+    }
 }
