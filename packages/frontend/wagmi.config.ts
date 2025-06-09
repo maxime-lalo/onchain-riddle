@@ -1,6 +1,6 @@
 import { defineConfig } from "@wagmi/cli";
 import { react } from "@wagmi/cli/plugins";
-import OnchainRiddle from "./config/abis/OnchainRiddle.json";
+import OnchainRiddle from "../../shared/contracts/OnchainRiddle.json";
 import type { Abi } from "viem";
 
 // Use environment variable if available, fallback to JSON address

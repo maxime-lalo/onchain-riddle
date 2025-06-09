@@ -1,41 +1,27 @@
 {
     "name": "onchain-riddle",
+    "version": "1.0.0",
     "private": true,
-    "version": "0.0.0",
     "type": "module",
+    "workspaces": [
+        "packages/*"
+    ],
     "scripts": {
-        "dev": "vite",
-        "build": "tsc -b && vite build",
-        "lint": "eslint .",
-        "preview": "vite preview",
+        "dev": "pnpm run --parallel dev",
+        "build": "pnpm run --recursive build",
+        "start:backend": "pnpm --filter backend start",
+        "start:frontend": "pnpm --filter frontend dev",
+        "dev:backend": "pnpm --filter backend dev",
+        "dev:frontend": "pnpm --filter frontend dev",
         "docker:build": "docker compose build",
-        "docker:push": "npm run docker:build && docker push myzall/onchain-riddle:latest"
-    },
-    "dependencies": {
-        "@rainbow-me/rainbowkit": "^2.2.6",
-        "@tanstack/react-query": "^5.80.6",
-        "@wagmi/cli": "^2.3.1",
-        "ethers": "^6.14.3",
-        "react": "^19.1.0",
-        "react-dom": "^19.1.0",
-        "react-router-dom": "^7.6.2",
-        "sweetalert2": "^11.22.0",
-        "ts-pattern": "^5.7.1",
-        "viem": "^2.31.0",
-        "wagmi": "^2.15.6"
+        "docker:up": "docker compose up",
+        "docker:dev": "docker compose up --build"
     },
     "devDependencies": {
-        "@eslint/js": "^9.25.0",
-        "@types/react": "^19.1.2",
-        "@types/react-dom": "^19.1.2",
-        "@vitejs/plugin-react": "^4.4.1",
-        "eslint": "^9.25.0",
-        "eslint-plugin-react-hooks": "^5.2.0",
-        "eslint-plugin-react-refresh": "^0.4.19",
-        "globals": "^16.0.0",
-        "sass": "^1.89.1",
-        "typescript": "~5.8.3",
-        "typescript-eslint": "^8.30.1",
-        "vite": "^6.3.5"
+        "typescript": "~5.8.3"
+    },
+    "engines": {
+        "node": ">=20.0.0",
+        "pnpm": ">=8.0.0"
     }
 }
