@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styles from "./classes.module.scss";
 import IsBot from "@/components/wrappers/IsBot";
+import IsContractActive from "@/components/wrappers/IsContractActive";
 
 export default function Header() {
     return (
@@ -14,12 +15,14 @@ export default function Header() {
                 >
                     Home
                 </NavLink>
-                <NavLink
-                    to="/riddle"
-                    className={({ isActive }) => (isActive ? "active" : "")}
-                >
-                    Play
-                </NavLink>
+                <IsContractActive>
+                    <NavLink
+                        to="/riddle"
+                        className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                        Play
+                    </NavLink>
+                </IsContractActive>
                 <IsBot>
                     <NavLink
                         to="/admin"
